@@ -39,7 +39,6 @@ public class CompressionService {
                 case "proposed2": encoder = new ProposedEncoder2(); break;
                 default: encoder = new BaselineEncoder();
             }
-            encoder.compress(iterations, job);
             job.setStatus(Job.Status.DONE);
             job.setFinishedAt(java.time.Instant.now());
             jobRepository.save(job);
