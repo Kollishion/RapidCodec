@@ -25,7 +25,6 @@ public class ProposedEncoder2Helper {
         SymbolCollector collector = new SymbolCollector();
         Map<QuadtreeUtils.Key, Boolean> cache = new HashMap<>();
 
-        /* ===== PASS 1: COLLECT ===== */
         for (int[][] frame : batch) {
             QuadtreeUtils.collectProposed(
                     0, 0,
@@ -44,8 +43,7 @@ public class ProposedEncoder2Helper {
 
         HuffmanBitWriter hbw =
                 new HuffmanBitWriter(rawWriter, table);
-
-        /* ===== PASS 2: ENCODE ===== */
+                
         for (int[][] frame : batch) {
             QuadtreeUtils.encodeProposed(
                     0, 0,

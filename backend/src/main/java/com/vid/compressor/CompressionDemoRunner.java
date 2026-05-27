@@ -11,8 +11,6 @@ public class CompressionDemoRunner {
 
     public static void main(String[] args) throws Exception {
 
-        // ================= MODE SELECTION =================
-        // baseline | proposed2
         String mode = (args.length > 0) ? args[0].toLowerCase() : "proposed2";
 
         System.out.println("====================================");
@@ -20,7 +18,6 @@ public class CompressionDemoRunner {
         System.out.println(" Encoder Mode: " + mode.toUpperCase());
         System.out.println("====================================");
 
-        // ================= PATHS =================
         File inputVideo   = new File("input/input.mp4");
         File framesFolder = new File("frames_raw");
         File outputFile   = new File(
@@ -35,7 +32,6 @@ public class CompressionDemoRunner {
             );
         }
 
-        // ================= FRAME EXTRACTION =================
         if (!framesFolder.exists() || FrameReader.totalFrames(framesFolder) == 0) {
             System.out.println("Extracting frames...");
             FFmpegFrameExtractor.extract(inputVideo, framesFolder);
@@ -50,7 +46,6 @@ public class CompressionDemoRunner {
 
         System.out.println("Total frames: " + totalFrames);
 
-        // ================= ENCODER SELECTION =================
         Encoder encoder;
 
         switch (mode) {
@@ -62,13 +57,11 @@ public class CompressionDemoRunner {
             );
         }
 
-        // ================= ENCODE =================
         Metrics metrics = encoder.encode(
                 framesFolder.getAbsolutePath(),
                 outputFile.getAbsolutePath()
         );
 
-        // ================= RESULTS =================
         System.out.println("\n===== ENCODING COMPLETE =====");
         System.out.println("Runtime           : " + metrics.getRuntimeMs() + " ms");
         System.out.println("Compression Ratio : " + metrics.getCompressionRatio());

@@ -28,6 +28,6 @@ public class DemoRunner {
         );
 
         System.out.println("Decoding complete!");
-        System.out.println("🎥 Video saved as: " + finalVideo.getAbsolutePath());
+        System.out.println("Video saved as: " + finalVideo.getAbsolutePath());
     }
 }

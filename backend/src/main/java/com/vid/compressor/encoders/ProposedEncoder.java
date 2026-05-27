@@ -18,7 +18,6 @@ import com.vid.compressor.model.Metrics;
 
 public class ProposedEncoder implements Encoder {
 
-    /* ================= BATCH ENCODER ================= */
 
     private void encodeBatch(
         List<int[][]> batch,
@@ -27,7 +26,6 @@ public class ProposedEncoder implements Encoder {
 
     SymbolCollector collector = new SymbolCollector();
 
-    // ✅ Correct cache type
     Map<QuadtreeUtils.Key, Boolean> cache = new HashMap<>();
 
     /* -------- PASS 1: COLLECT -------- */
@@ -51,7 +49,6 @@ public class ProposedEncoder implements Encoder {
     HuffmanBitWriter writer =
             new HuffmanBitWriter(rawWriter, table);
 
-    /* -------- PASS 2: ENCODE -------- */
     for (int[][] frame : batch) {
         QuadtreeUtils.encodeProposed(
                 0, 0,
@@ -67,7 +64,6 @@ public class ProposedEncoder implements Encoder {
 }
 
 
-    /* ================= INTERFACE METHOD ================= */
 
     @Override
     public Metrics encode(String framesDir, String outputFile) {

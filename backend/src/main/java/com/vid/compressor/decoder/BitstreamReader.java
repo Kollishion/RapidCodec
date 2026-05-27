@@ -15,30 +15,58 @@ public class BitstreamReader implements Closeable {
         this.in = new FileInputStream(file);
     }
 
-    public boolean readBit() throws IOException {
+    public void alignToByte() throws IOException {
+
         if (bitPos == 8) {
+            return;
+        }
+
+        while (bitPos != 8) {
+            readBit();
+        }
+    }
+
+    public boolean readBit() throws IOException {
+
+        if (bitPos == 8) {
+
             int val = in.read();
+
             if (val == -1) {
                 throw new IOException("Unexpected EOF");
             }
+
             currentByte = val;
             bitPos = 0;
         }
 
         boolean bit = ((currentByte >> (7 - bitPos)) & 1) == 1;
+
         bitPos++;
+
         return bit;
     }
-    public int readByte() throws IOException {
-    int val = 0;
-    for (int i = 0; i < 8; i++) {
-        val = (val << 1) | (readBit() ? 1 : 0);
+
+    public int readBits(int count) throws IOException {
+
+        int val = 0;
+
+        for (int i = 0; i < count; i++) {
+
+            val = (val << 1) | (readBit() ? 1 : 0);
+        }
+
+        return val;
     }
-    return val;
-}
+
+    public int readByte() throws IOException {
+
+        return readBits(8);
+    }
 
     @Override
     public void close() throws IOException {
+
         in.close();
     }
 }

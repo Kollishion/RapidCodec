@@ -8,8 +8,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 public class FrameReader {
-
-    // Load a batch of grayscale frames
     public static List<int[][]> loadGrayscaleFramesBatch(File folder, int startIndex, int batchSize) throws Exception {
         File[] files = folder.listFiles();
         if (files == null) return new ArrayList<>();
@@ -39,8 +37,6 @@ public class FrameReader {
 
         return frames;
     }
-
-    // Total number of frames in folder
     public static int totalFrames(File folder) {
         File[] files = folder.listFiles();
         return (files != null) ? files.length : 0;

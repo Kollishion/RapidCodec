@@ -18,9 +18,11 @@ public class BitstreamWriter implements Closeable {
     }
 
     public void writeBit(boolean bit) throws IOException {
+
         if (bit) {
             currentByte |= (1 << (7 - bitPos));
         }
+
         bitPos++;
 
         if (bitPos == 8) {
@@ -29,25 +31,48 @@ public class BitstreamWriter implements Closeable {
     }
 
     public void writeByte(int value) throws IOException {
+
         flushPartial();
+
         out.write(value & 0xFF);
     }
 
+    public void writeBits(int value, int count) throws IOException {
+
+    	for (int i = count - 1; i >= 0; i--) {
+
+       	 	boolean bit = ((value >> i) & 1) == 1;
+
+        	writeBit(bit);
+    		}
+	}
     private void flushByte() throws IOException {
+
         out.write(currentByte);
+
         currentByte = 0;
         bitPos = 0;
     }
 
     private void flushPartial() throws IOException {
+
         if (bitPos > 0) {
             flushByte();
         }
     }
 
+    public void flush() throws IOException {
+
+        flushPartial();
+
+        out.flush();
+    }
+
     @Override
     public void close() throws IOException {
+
         flushPartial();
+
         out.close();
     }
 }

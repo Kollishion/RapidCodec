@@ -8,7 +8,7 @@ public class SymbolCollector {
     private final Map<Integer, Integer> freq = new HashMap<>();
 
     public void add(int symbol) {
-         if (symbol < 0 || symbol > 255) {
+         if (symbol < 0 || symbol > 1023) {
         throw new IllegalArgumentException(
             "Symbol out of range: " + symbol);
         }

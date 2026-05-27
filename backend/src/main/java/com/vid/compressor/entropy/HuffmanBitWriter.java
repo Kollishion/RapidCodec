@@ -20,20 +20,21 @@ public class HuffmanBitWriter {
         this.codes = codes;
     }
 
-   public void writeSymbol(int symbol) throws IOException {
-    String code = codes.get(symbol);
-    if (code == null) {
-        throw new IllegalStateException(
-            "No Huffman code for symbol: " + symbol);
+    public void writeSymbol(int symbol) throws IOException {
+
+        String code = codes.get(symbol);
+
+        if (code == null) {
+            throw new IllegalStateException(
+                "No Huffman code for symbol: " + symbol);
+        }
+
+        for (int i = 0; i < code.length(); i++) {
+            writer.writeBit(code.charAt(i) == '1');
+        }
     }
 
-    for (int i = 0; i < code.length(); i++) {
-        writer.writeBit(code.charAt(i) == '1');
-    }
-}
-
-
-    public void flush() {
-
+    public void flush() throws IOException {
+        writer.flush();
     }
 }

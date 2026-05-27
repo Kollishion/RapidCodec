@@ -34,11 +34,6 @@ public class ProposedEncoder2 implements Encoder {
         }
 
         try (BitstreamWriter bw = new BitstreamWriter(new File(outputFile))) {
-
-            /* =====================================================
-             * PASS 1: SYMBOL COLLECTION (NO BIT OUTPUT)
-             * ===================================================== */
-
             SymbolCollector collector = new SymbolCollector();
 
             for (int start = 0; start < totalFrames; start += BATCH_SIZE) {
@@ -46,11 +41,8 @@ public class ProposedEncoder2 implements Encoder {
                 List<int[][]> batch =
                         FrameReader.loadGrayscaleFramesBatch(
                                 folder, start, BATCH_SIZE);
-
+		Map<Key, Boolean> tempCache = new HashMap<>();
                 for (int[][] frame : batch) {
-
-                    // Temporary cache only for discovering structure
-                    Map<Key, Boolean> tempCache = new HashMap<>();
 
                     QuadtreeUtils.collectProposed(
                             0,
@@ -64,31 +56,18 @@ public class ProposedEncoder2 implements Encoder {
 
                 batch.clear();
             }
-
-            /* =====================================================
-             * BUILD & WRITE HUFFMAN TABLE
-             * ===================================================== */
-
             HuffmanTable table =
                     HuffmanTable.build(collector.toFrequencyArray());
 
             HuffmanHeaderWriter.writeHeader(bw, table);
-
-            /* =====================================================
-             * PASS 2: ACTUAL ENCODING (CACHE + FALLBACK)
-             * ===================================================== */
+        	HuffmanBitWriter hbw = new HuffmanBitWriter(bw, table);
+                Map<Key, Boolean> cache = new HashMap<>();
 
             for (int start = 0; start < totalFrames; start += BATCH_SIZE) {
 
                 List<int[][]> batch =
                         FrameReader.loadGrayscaleFramesBatch(
                                 folder, start, BATCH_SIZE);
-
-                HuffmanBitWriter hbw =
-                        new HuffmanBitWriter(bw, table);
-
-                // Cache reused across frames in this batch (temporal locality)
-                Map<Key, Boolean> cache = new HashMap<>();
 
                 for (int[][] frame : batch) {
                     QuadtreeUtils.encodeProposed(
@@ -101,19 +80,14 @@ public class ProposedEncoder2 implements Encoder {
                     );
                 }
 
-                hbw.flush();
                 batch.clear();
             }
-
+		hbw.flush();
         } catch (Exception e) {
             throw new RuntimeException("ProposedEncoder2 failed", e);
         }
 
         long endTime = System.nanoTime();
-
-        /* =====================================================
-         * METRICS (PLACEHOLDER / EXPERIMENTAL)
-         * ===================================================== */
 
         job.setRuntimeMs((endTime - startTime) / 1_000_000);
         job.setCompressionRatio(1.4);

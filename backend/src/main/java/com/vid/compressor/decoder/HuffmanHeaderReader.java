@@ -11,22 +11,39 @@ public class HuffmanHeaderReader {
     public static HuffmanTable readHeader(BitstreamReader reader)
             throws IOException {
 
-        int count = reader.readByte();
+        int count = reader.readBits(8);
+
         Map<Integer, String> codes = new HashMap<>();
 
+        int symbol = 0;
+        int len = 0;
+
         for (int i = 0; i < count; i++) {
-            int symbol = reader.readByte();
-            int len = reader.readByte();
+
+            symbol = reader.readBits(8);
+            len = reader.readBits(8);
 
             StringBuilder sb = new StringBuilder();
+
             for (int b = 0; b < len; b++) {
                 sb.append(reader.readBit() ? '1' : '0');
             }
+
             codes.put(symbol, sb.toString());
         }
 
+        reader.alignToByte();
+
         HuffmanTable table = new HuffmanTable();
+
         table.getCodes().putAll(codes);
+
+        System.out.println(
+            "symbol=" + symbol +
+            " len=" + len +
+            " code=" + codes
+        );
+
         return table;
     }
 }
