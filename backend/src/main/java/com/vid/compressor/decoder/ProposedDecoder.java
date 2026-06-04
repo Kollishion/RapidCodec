@@ -139,33 +139,68 @@ public class ProposedDecoder {
 	int avgSymbol = decoder.readSymbol();
 
 	int blockSize = symbolToSize(sizeSymbol);
-
+	if (blockSize != size) {
+    	throw new IOException("Size mismatch: expected " + size + " got " + blockSize);
+	}
 	int avg = symbolToAvg(avgSymbol);
 
-	decoder.readSymbol();
-	decoder.readSymbol();
-	decoder.readSymbol();
-	decoder.readSymbol();
+	int r1 = symbolToAvg(decoder.readSymbol()) - 128;
+	int r2 = symbolToAvg(decoder.readSymbol()) - 128;
+	int r3 = symbolToAvg(decoder.readSymbol()) - 128;
+	int r4 = symbolToAvg(decoder.readSymbol()) - 128;
+	int step = Math.max(1, blockSize / 8);
 
-	int step = Math.max(1, blockSize / 4);
+	int q1 = avg + r1;
+	int q2 = avg + r2;
+	int q3 = avg + r3;
+	int q4 = avg + r4;
+	
+for (int yy = sy; yy < sy + blockSize; yy += step) {
 
-	for (int yy = sy; yy < sy + blockSize; yy += step) {
+    for (int xx = sx; xx < sx + blockSize; xx += step) {
 
-    		for (int xx = sx; xx < sx + blockSize; xx += step) {
- 
         int tex = decoder.readSymbol() - 300;
+	tex -= 128;
+        int base;
 
-        for (int y2 = yy; y2 < Math.min(yy + step, sy + blockSize);
+        if (yy < sy + blockSize / 2) {
+
+            if (xx < sx + blockSize / 2) {
+                base = q1;
+            } else {
+                base = q2;
+            }
+
+        } else {
+
+            if (xx < sx + blockSize / 2) {
+                base = q3;
+            } else {
+                base = q4;
+            }
+        }
+
+        int pixel = Math.max(
+                0,
+                Math.min(
+                        255,
+                        (base + tex)
+                )
+        );
+
+        for (int y2 = yy;
+             y2 < Math.min(yy + step, sy + blockSize);
              y2++) {
 
-            	for (int x2 = xx; x2 < Math.min(xx + step, sx + blockSize);
+            for (int x2 = xx;
+                 x2 < Math.min(xx + step, sx + blockSize);
                  x2++) {
 
-                frame[y2][x2] = tex;
-            		}
-        				}
-    				}
-			}
-    		}
-	}
+                frame[y2][x2] = pixel;
+            }
+        }
+    }
+}
+      }
+   }
 }

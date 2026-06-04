@@ -38,10 +38,10 @@ public class ProposedEncoder2 implements Encoder {
 
             for (int start = 0; start < totalFrames; start += BATCH_SIZE) {
 
-                List<int[][]> batch =
-                        FrameReader.loadGrayscaleFramesBatch(
-                                folder, start, BATCH_SIZE);
+                List<int[][]> batch = FrameReader.loadGrayscaleFramesBatch(folder, start, BATCH_SIZE);
 		Map<Key, Boolean> tempCache = new HashMap<>();
+		int[][] firstFrame = batch.get(0);
+		System.out.println("Frame dimensions = " + firstFrame[0].length + "x" + firstFrame.length);
                 for (int[][] frame : batch) {
 
                     QuadtreeUtils.collectProposed(
@@ -56,6 +56,13 @@ public class ProposedEncoder2 implements Encoder {
 
                 batch.clear();
             }
+	    System.out.println("MAX SYMBOL = " + collector.getFrequencies()
+             .keySet()
+             .stream()
+             .max(Integer::compare)
+             .orElse(0)
+		);
+	    System.out.println("UNIQUE SYMBOLS = " + collector.getFrequencies().size());
             HuffmanTable table =
                     HuffmanTable.build(collector.toFrequencyArray());
 

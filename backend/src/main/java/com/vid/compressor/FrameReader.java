@@ -22,7 +22,7 @@ public class FrameReader {
             int width = img.getWidth();
             int height = img.getHeight();
             int[][] gray = new int[height][width];
-
+	    
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
                     int rgb = img.getRGB(x, y);

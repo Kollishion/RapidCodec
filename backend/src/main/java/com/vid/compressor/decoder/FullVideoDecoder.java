@@ -24,7 +24,7 @@ public class FullVideoDecoder {
 			HuffmanTable table = HuffmanHeaderReader.readHeader(reader);
 			HuffmanBitReader huff = new HuffmanBitReader(reader, table);
 			Map<Key, Boolean> cache = new HashMap<>(); 	
-			for (int i = 0; i < frameCount; i++) { 
+			for (int i = 0; i < frameCount; i++) {
     				int[][] frame = new int[QuadtreeUtils.CTU_SIZE][QuadtreeUtils.CTU_SIZE];
 				
     				ProposedDecoder.decodeBlock(
@@ -65,9 +65,10 @@ public class FullVideoDecoder {
             String.format("frame_%04d.png", i));
 
     ImageIO.write(image, "png", outFile);
-
+    if(i % 100 == 0){
     System.out.println("Saved: " + outFile.getName());
-}
+    				}
+			}
 		}
 		return frames;
 	}

@@ -11,13 +11,13 @@ public class HuffmanHeaderWriter {
             BitstreamWriter writer,
             Map<Integer, String> table) throws IOException {
 
-        writer.writeBits(table.size(), 8);
+        writer.writeBits(table.size(), 16);
 
         for (var e : table.entrySet()) {
             int symbol = e.getKey();
             String code = e.getValue();
 
-            writer.writeBits(symbol, 8);
+            writer.writeBits(symbol, 16);
             writer.writeBits(code.length(), 8);
 
             for (char c : code.toCharArray()) {
@@ -27,27 +27,28 @@ public class HuffmanHeaderWriter {
 
         writer.flush();
     }
-
+	
     public static void writeHeader(
-            BitstreamWriter writer,
-            HuffmanTable table) throws IOException {
+        BitstreamWriter writer,
+        HuffmanTable table) throws IOException {
 
-        Map<Integer, String> codes = table.getCodes();
+    Map<Integer, String> codes = table.getCodes();
 
-        writer.writeBits(codes.size(), 8);
+    writer.writeBits(codes.size(), 16);
 
-        for (Map.Entry<Integer, String> e : codes.entrySet()) {
-            int symbol = e.getKey();
-            String code = e.getValue();
+    for (Map.Entry<Integer, String> e : codes.entrySet()) {
 
-            writer.writeBits(symbol, 8);
-            writer.writeBits(code.length(), 8);
+        int symbol = e.getKey();
+        String code = e.getValue();
 
-            for (int i = 0; i < code.length(); i++) {
-                writer.writeBit(code.charAt(i) == '1');
-            }
+        writer.writeBits(symbol, 16);
+        writer.writeBits(code.length(), 8);
+
+        for (int i = 0; i < code.length(); i++) {
+            writer.writeBit(code.charAt(i) == '1');
         }
-
-        writer.flush();
     }
+
+    writer.flush();
+}
 }

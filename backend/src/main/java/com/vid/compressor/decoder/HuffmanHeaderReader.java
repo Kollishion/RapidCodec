@@ -11,7 +11,7 @@ public class HuffmanHeaderReader {
     public static HuffmanTable readHeader(BitstreamReader reader)
             throws IOException {
 
-        int count = reader.readBits(8);
+        int count = reader.readBits(16);
 
         Map<Integer, String> codes = new HashMap<>();
 
@@ -20,7 +20,7 @@ public class HuffmanHeaderReader {
 
         for (int i = 0; i < count; i++) {
 
-            symbol = reader.readBits(8);
+            symbol = reader.readBits(16);
             len = reader.readBits(8);
 
             StringBuilder sb = new StringBuilder();
@@ -37,13 +37,6 @@ public class HuffmanHeaderReader {
         HuffmanTable table = new HuffmanTable();
 
         table.getCodes().putAll(codes);
-
-        System.out.println(
-            "symbol=" + symbol +
-            " len=" + len +
-            " code=" + codes
-        );
-
         return table;
     }
 }

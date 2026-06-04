@@ -75,7 +75,7 @@ public static int sizeToSymbol(int size) {
     }
 
     public static double varianceThreshold(int size) {
-        return 1000.0 / size;
+        return 200.0;
     }
 
 public static final class Key {
@@ -130,7 +130,6 @@ public static final class Key {
             collectBaseline(sx + h, sy + h, h, frame, sc);
         } else {
 		 int avg = avg(sx, sy, size, frame);
-
     sc.add(sizeToSymbol(size));
     sc.add(avgToSymbol(avg));
 
@@ -204,7 +203,6 @@ public static void collectProposed(
         sc.add(2);
 
     } else {
-
         sc.add(actualSplit ? 1 : 0);
         cache.put(key, actualSplit);
     }
@@ -233,7 +231,7 @@ public static void collectProposed(
     sc.add(avgToSymbol(clamp(r2 + 128)));
     sc.add(avgToSymbol(clamp(r3 + 128)));
     sc.add(avgToSymbol(clamp(r4 + 128)));
-    int step = Math.max(1, size / 4);
+    int step = Math.max(1, size / 8);
     for (int yy = sy; yy < sy + size; yy += step) {
 
     	for (int xx = sx; xx < sx + size; xx += step) {
@@ -254,27 +252,20 @@ public static void collectProposed(
             }
         }
 
-        int tex = localSum / count;
+        int tex = (localSum / count) - avg;
 
-        sc.add(300 + tex);
+        sc.add(300 + clamp(tex+128));
     		}
 	}
     }
 }
-public static void encodeProposed(
-        int sx, int sy, int size,
-        int[][] frame,
-        Map<Key, Boolean> cache,
-        HuffmanBitWriter writer) throws IOException {
+	public static void encodeProposed(int sx, int sy, int size, int[][] frame, Map<Key, Boolean> cache, HuffmanBitWriter writer) throws IOException {
 
     int avg = avg(sx, sy, size, frame);
 
     Key key = new Key(sx, sy, size);
 
-    boolean actualSplit =
-            size > MIN_CU &&
-            variance(sx, sy, size, frame) > varianceThreshold(size);
-
+    boolean actualSplit = size > MIN_CU && variance(sx, sy, size, frame) > varianceThreshold(size);
     Boolean predicted = cache.get(key);
 
     if (predicted != null && predicted == actualSplit) {
@@ -311,31 +302,26 @@ public static void encodeProposed(
         writer.writeSymbol(avgToSymbol(clamp(r2 + 128)));
         writer.writeSymbol(avgToSymbol(clamp(r3 + 128)));
         writer.writeSymbol(avgToSymbol(clamp(r4 + 128)));
-	int step = Math.max(1, size / 4);
+	int step = Math.max(1, size / 8);
 
-for (int yy = sy; yy < sy + size; yy += step) {
+	for (int yy = sy; yy < sy + size; yy += step) {
 
-    for (int xx = sx; xx < sx + size; xx += step) {
+    		for (int xx = sx; xx < sx + size; xx += step) {
 
-        int localSum = 0;
-        int count = 0;
+        	int localSum = 0;
+        	int count = 0;
 
-        for (int y2 = yy;
-             y2 < Math.min(yy + step, sy + size);
-             y2++) {
-
-            for (int x2 = xx;
-                 x2 < Math.min(xx + step, sx + size);
-                 x2++) {
+        for (int y2 = yy; y2 < Math.min(yy + step, sy + size); y2++) {
+	for (int x2 = xx; x2 < Math.min(xx + step, sx + size);x2++) {
 
                 localSum += frame[y2][x2];
                 count++;
             }
         }
 
-        int tex = localSum / count;
+        int tex = (localSum / count) - avg1;
 
-        writer.writeSymbol(300 + tex);
+        writer.writeSymbol(300 + clamp(tex + 128));
     				}
 			}
     		}
