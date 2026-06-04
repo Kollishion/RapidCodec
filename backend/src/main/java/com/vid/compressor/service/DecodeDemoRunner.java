@@ -32,6 +32,6 @@ public class DecodeDemoRunner {
                 25
         );
 
-        System.out.println("✅ Video reconstructed successfully");
+        System.out.println("Video reconstructed successfully");
     }
 }

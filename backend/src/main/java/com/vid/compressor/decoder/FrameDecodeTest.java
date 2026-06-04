@@ -5,7 +5,7 @@ import java.io.File;
 public class FrameDecodeTest {
 	public static void main(String[] args) throws Exception {
 
-		File input = new File("compressed_proposed2.dat");
+		File input = new File("compressed_video.dat");
 
 		int[][] frame = Decoder.decodeFrame(input);
 

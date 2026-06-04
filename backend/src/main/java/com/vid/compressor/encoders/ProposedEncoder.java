@@ -89,12 +89,7 @@ public class ProposedEncoder implements Encoder {
                 encodeBatch(batch, rawWriter, !headerWritten);
                 headerWritten = true;
 
-                batch.clear(); // free memory
-
-                System.out.println(
-                        "Processed frames " + start + " to "
-                        + Math.min(start + batchSize, totalFrames)
-                );
+                batch.clear(); 
             }
 
         } catch (Exception e) {
